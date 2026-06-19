@@ -111,7 +111,8 @@ Evaluation criteria:
 3. Appropriateness of length — a concise, direct answer that fully satisfies the task is BETTER  and should be rewardedthan a longer one that pads with unnecessary detail which should be penalized. Only reward length when the task genuinely requires depth, multiple steps, or thorough explanation. Penalize responses that are needlessly long without adding value, and penalize responses that are too brief to actually answer what was asked.
 4. Clarity and coherence — is it well-structured and easy to understand(should be rewarded), or is it confusing and disorganized(should be penalized)?
 5. Reward if the response demonstrates the specific strengths of its prompting technique — for example, does the few-shot response effectively leverage the examples provided, and does the chain-of-thought response show clear step-by-step reasoning
-keep in mind:
+
+Keep in mind:
 
 Important: Evaluate all three responses simultaneously before assigning any scores. 
 Do not assess one response, score it, and then move on to the next. 
