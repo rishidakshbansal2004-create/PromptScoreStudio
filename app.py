@@ -80,11 +80,11 @@ Now the model learns the pattern and can classify new examples more accurately.
     {
         "title": "🧠 Chain-of-Thought",
 
-        "text": """Encourage step-by-step reasoning. ",
+        "text": """Encourage step-by-step reasoning. 
 
-        Great for logic, math, and complex tasks.",
+        Great for logic, math, and complex tasks.
 
-        Example: 'Let's think step by step' or 'First, we do this...'",
+        Example: 'Let's think step by step' or 'First, we do this...
 
         This often leads to more accurate and detailed responses."""
     },
