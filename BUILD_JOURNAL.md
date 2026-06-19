@@ -53,22 +53,6 @@ This was the first genuinely exciting moment in the project. Zero-shot gave a lo
 Seeing those three genuinely different outputs side by side — not just reworded versions of each other — was the moment the project stopped feeling like "I'm following instructions" and started feeling like "I'm actually seeing something real about how these techniques behave."
 
 ---
-
-## Streamlit: my first real wall
-
-Getting the three-call script working in the terminal was one thing. Getting it into an actual web UI was where I hit my first proper wall.
-
-I wrote the Streamlit version, ran `streamlit run app.py`, and got a **completely blank white screen**. No error in the terminal. No error in the browser. Just nothing.
-
-I went through this methodically:
-- Checked if `streamlit` was actually imported (it was)
-- Manually copy-pasted the local URL instead of relying on the auto-opened tab
-- Hard-refreshed, tried a different browser
-- Eventually isolated it: I was running this inside VS Code's integrated terminal on a Mac, and the link-click behavior from there can open VS Code's own internal preview pane instead of a real browser — which silently failed to render Streamlit properly.
-
-The fix was almost embarrassingly simple once found: close that internal preview, manually open an actual standalone browser app, and paste the URL there directly. Nothing was wrong with my code at all — it was an environment quirk specific to that exact combination of tools (VS Code terminal + Mac + Streamlit's auto-launch behavior).
-
-This was a good early lesson: not every bug is a code bug. Sometimes it's the five layers of tooling underneath your code.
 ## Building the judge — and immediately hitting its limits
 
 Once the three-way comparison worked, I wanted more than "look at three boxes" — I wanted the app to actually *score* each response, so there was a real verdict, not just raw output. This became the LLM-as-judge feature: a fourth API call that takes the task and all three responses, and scores them.
