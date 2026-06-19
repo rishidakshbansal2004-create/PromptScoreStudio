@@ -6,6 +6,10 @@ Welcome to **Prompt Wizarding World** — an interactive playground that puts th
 
 This isn't just a demo. It's a hands-on way to *see* prompt engineering work — and to test whether you've actually learned it.
 
+### 🔗 [Try it live](https://promptwizardingstudio.streamlit.app)
+
+![Prompt Wizarding World screenshot](demo.png)
+
 ---
 
 ## ✨ What it does
