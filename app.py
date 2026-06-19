@@ -8,9 +8,21 @@ from typing import Literal
 import time
 
 load_dotenv()
-api_key_resp = st.secrets.get("Res_Gem_Api_Key") or os.getenv("Res_Gem_Api_Key")
+api_key_resp = os.getenv("Res_Gem_Api_Key")
+
+if not api_key_resp:
+    try:
+        api_key_resp = st.secrets["Res_Gem_Api_Key"]
+    except:
+        pass
 client1 = genai.Client(api_key=api_key_resp)
-api_key_judge = st.secrets.get("Gem_Api_Key") or os.getenv("Gem_Api_Key")
+
+api_key_judge = os.getenv("Gem_Api_Key")
+if not api_key_judge:
+    try:
+        api_key_resp = st.secrets["Gem_Api_Key"]
+    except:
+        pass
 client2 = genai.Client(api_key=api_key_judge)
 
 import streamlit as st
@@ -126,9 +138,10 @@ if not st.session_state.get("comparison_done", False):
 
     if st.button("Run comparison") and task.strip():
         with st.spinner("🚀Analysing the Task..."):
-            class_response = client2.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=classify_task_prompt(task),
+            class_response = call_with_retry(
+                client1,
+                "gemini-2.5-flash",
+                classify_task_prompt(task),
                 config={
                     "response_mime_type": "application/json",
                     "response_schema": TaskType,
@@ -147,9 +160,10 @@ if not st.session_state.get("comparison_done", False):
             resp3 = call_with_retry(client1, "gemini-2.5-flash-lite", cot_prompt(task))
 
         with st.spinner("⚖️ Judging responses..."):
-            judge_response = client1.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=judge_prompt(task, resp1.text, resp2.text, resp3.text),
+            judge_response = call_with_retry(
+                client1,
+                "gemini-2.5-flash",
+                judge_prompt(task, resp1.text, resp2.text, resp3.text),
                 config={
                     "response_mime_type": "application/json",
                     "response_schema": JudgeResult,
