@@ -47,8 +47,8 @@ Most prompt comparison demos just show three answers and call it a day. This one
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/rishidakshbansal2004-create/prompt-wizarding-world.git
-cd prompt-wizarding-world
+git clone https://github.com/rishidakshbansal2004-create/PromptWizardingStudio.git
+cd PromptWizardingStudio
 ```
 
 ### 2. Create a virtual environment (recommended)
