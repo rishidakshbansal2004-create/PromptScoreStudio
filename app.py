@@ -140,7 +140,7 @@ if not st.session_state.get("comparison_done", False):
         with st.spinner("🚀Analysing the Task..."):
             class_response = call_with_retry(
                 client1,
-                "gemini-2.5-flash",
+                "gemini-3.1-flash-lite",
                 classify_task_prompt(task),
                 config={
                     "response_mime_type": "application/json",
@@ -151,18 +151,18 @@ if not st.session_state.get("comparison_done", False):
         task_category = class_response.parsed.category
 
         with st.spinner("🤖 Generating 1st response..."):
-            resp1 = call_with_retry(client1, "gemini-2.5-flash-lite", zero_shot_prompt(task))
+            resp1 = call_with_retry(client1, "gemini-3.1-flash-lite", zero_shot_prompt(task))
 
         with st.spinner("🤖 Generating 2nd response..."):
-            resp2 = call_with_retry(client2, "gemini-2.5-flash-lite", few_shot_prompt(task, task_category))
+            resp2 = call_with_retry(client2, "gemini-3.1-flash-lite", few_shot_prompt(task, task_category))
 
         with st.spinner("🤖 Generating 3rd response..."):
-            resp3 = call_with_retry(client1, "gemini-2.5-flash-lite", cot_prompt(task))
+            resp3 = call_with_retry(client1, "gemini-3.1-flash-lite", cot_prompt(task))
 
         with st.spinner("⚖️ Judging responses..."):
             judge_response = call_with_retry(
                 client1,
-                "gemini-2.5-flash",
+                "gemini-3.5-flash",
                 judge_prompt(task, resp1.text, resp2.text, resp3.text),
                 config={
                     "response_mime_type": "application/json",
@@ -249,7 +249,7 @@ if st.session_state.get("comparison_done", False):
             with st.spinner("🤖 Generating response for your prompt..."):
                 custom_response = call_with_retry(
                     client2,
-                    "gemini-2.5-flash-lite",
+                    "gemini-3.1-flash-lite",
                     f"{custom_prompt}\n\n{st.session_state['task']}"
                 )
 
@@ -261,7 +261,7 @@ if st.session_state.get("comparison_done", False):
 
                 custom_judge_resp = call_with_retry(
                     client1,
-                    "gemini-2.5-flash",
+                    "gemini-3.5-flash",
                     judge_custom_prompt(
                         st.session_state["task"],
                         st.session_state["resp1"],
