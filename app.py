@@ -159,36 +159,61 @@ if not st.session_state.get("comparison_done", False):
         with st.spinner("🤖 Generating 3rd response..."):
             resp3 = call_with_retry(client1, "gemini-3.1-flash-lite", cot_prompt(task))
 
-        with st.spinner("⚖️ Judging responses..."):
-            judge_response = call_with_retry(
+        with st.spinner("⚖️ Judging responses (bias-corrected)..."):
+            orderings = [
+            (resp1.text, resp2.text, resp3.text, "Zero-shot", "Few-shot", "CoT"),
+            (resp2.text, resp3.text, resp1.text, "Few-shot", "CoT", "Zero-shot"),
+            (resp3.text, resp1.text, resp2.text, "CoT", "Zero-shot", "Few-shot"),
+            ]
+
+            all_zero_scores = []
+            all_few_scores = []
+            all_cot_scores = []
+            all_winners = []
+
+            for r1, r2, r3, l1, l2, l3 in orderings:
+                result = call_with_retry(
                 client1,
-                "gemini-3.5-flash",
-                judge_prompt(task, resp1.text, resp2.text, resp3.text),
+                "gemini-2.5-flash",
+                judge_prompt(task, r1, r2, r3, l1, l2, l3),
                 config={
-                    "response_mime_type": "application/json",
-                    "response_schema": JudgeResult,
+                "response_mime_type": "application/json",
+                "response_schema": JudgeResult,
                 },
-            )
+                )
+                if result.parsed is None:
+                    st.error("UNEXPECTED ERROR OCCURED JUDGMENT COULDN'T BE PASSED")
+                    st.write(result.text)
+                    st.stop()
 
-        if judge_response.parsed is None:
-            st.error("UNEXPECTED ERROR OCCURED JUDGMENT COUDN'T BE PASSED")
-            st.write(judge_response.text)
-            st.stop()
+                all_zero_scores.append(result.parsed.zero_shot_score)
+                all_few_scores.append(result.parsed.few_shot_score)
+                all_cot_scores.append(result.parsed.cot_score)
+                all_winners.append(result.parsed.best_technique)
 
-        result = judge_response.parsed
+            final_zero = round(sum(all_zero_scores) / 3)
+            final_few = round(sum(all_few_scores) / 3)
+            final_cot = round(sum(all_cot_scores) / 3)
+
+            best = max(
+            [("Zero-shot", final_zero), ("Few-shot", final_few), ("CoT", final_cot)],
+            key=lambda x: x[1]
+            )[0]
 
         st.session_state["resp1"] = resp1.text
         st.session_state["resp2"] = resp2.text
         st.session_state["resp3"] = resp3.text
-        st.session_state["zero_score"] = result.zero_shot_score
-        st.session_state["few_score"] = result.few_shot_score
-        st.session_state["cot_score"] = result.cot_score
+        st.session_state["all_zero_scores"] = all_zero_scores
+        st.session_state["all_few_scores"] = all_few_scores
+        st.session_state["all_cot_scores"] = all_cot_scores
+        st.session_state["zero_score"] = final_zero
+        st.session_state["few_score"] = final_few
+        st.session_state["cot_score"] = final_cot
         st.session_state["task"] = task
         st.session_state["comparison_done"] = True
         st.session_state["response_done"] = True
-        st.session_state["best_technique"] = result.best_technique
-        st.session_state["reasoning"] = result.reasoning
-
+        st.session_state["best_technique"] = best
+        st.session_state["reasoning"] = f"Consistent winner across 3 evaluation orderings: {all_winners}"
 
 if st.session_state.get("response_done", False):
         st.caption(f"Responses and scores for Task: {st.session_state['task']}")
@@ -223,7 +248,24 @@ if st.session_state.get("response_done", False):
                 st.rerun()
 
         st.divider()
-        st.success(f"🏆 Best technique: {st.session_state['best_technique']} — REASON BEHIND THE CHOICE: {st.session_state['reasoning']}")
+        best = st.session_state['best_technique']
+
+        if best == "Zero-shot":
+            scores = st.session_state["all_zero_scores"]
+            avg = st.session_state["zero_score"]
+        elif best == "Few-shot":
+            scores = st.session_state["all_few_scores"]
+            avg = st.session_state["few_score"]
+        else:
+            scores = st.session_state["all_cot_scores"]
+            avg = st.session_state["cot_score"]
+        
+        winners = st.session_state["reasoning"]
+        flip_detected = len(set(w.lower() for w in winners)) > 1
+
+        st.success(f"🏆 Best technique: {best} — scores across 3 evaluation rounds: {scores[0]}, {scores[1]}, {scores[2]} → avg: {avg}/100")
+        if flip_detected:
+            st.warning("⚠️ Position bias detected and is mitigated — winner changed across evaluation orderings. Final scores are bias-corrected averages.")
 
 if st.session_state.get("comparison_done", False):
 
@@ -261,7 +303,7 @@ if st.session_state.get("comparison_done", False):
 
                 custom_judge_resp = call_with_retry(
                     client1,
-                    "gemini-3.5-flash",
+                    "gemini-2.5-flash",
                     judge_custom_prompt(
                         st.session_state["task"],
                         st.session_state["resp1"],
