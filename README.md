@@ -132,13 +132,14 @@ Opens at `http://localhost:8501`
 ---
 
 ## 📁 Project Structure
+```
 PromptWizardingStudio/
 ├── app.py          # Streamlit UI, session state, API orchestration
 ├── prompt.py       # All prompt functions — zero-shot, few-shot, CoT, judge, classifier
 ├── requirements.txt
 ├── .env            # API keys (not committed)
 └── README.md
-
+```
 ---
 
 ## 🔮 What I learned building this
