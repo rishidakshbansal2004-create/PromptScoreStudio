@@ -94,16 +94,15 @@ Think through this carefully before answering. Use whichever of the following st
 
 Don't over-explain or add unnecessary detail — only include what is genuinely needed to reach the answer."""
 
-def judge_prompt(task, resp1, resp2, resp3):
+def judge_prompt(task, r1, r2, r3, l1, l2, l3):
     return f"""You are a strict, discerning expert evaluator comparing three AI responses to the same task. Your job is to genuinely differentiate quality, not give everyone similar high scores.
 
 Task: {task}
-Response A (Zero-shot — no examples or special instructions given): {resp1}
+Response A ({l1}): {r1}
 
-Response B (Few-shot — given example answers to learn the pattern from): {resp2}
+Response B ({l2}): {r2}
 
-Response C (Chain-of-Thought — explicitly asked to reason step by step): {resp3}
-
+Response C ({l3}): {r3}
 
 Evaluation criteria:
 1. Relevance and factual accuracy — does it correctly address the task?
@@ -117,7 +116,6 @@ Keep in mind:
 Important: Evaluate all three responses simultaneously before assigning any scores. 
 Do not assess one response, score it, and then move on to the next. 
 This is a comparative evaluation, not an absolute one. 
-To avoid positional bias (such as favoring the first, second, or third response based on order), compare the strengths and weaknesses of all three responses side by side and use the full set of comparisons when determining the final scores and rankings. 
 Ensure that no response receives an advantage or disadvantage simply because of its position in the sequence.
 
 Process:
