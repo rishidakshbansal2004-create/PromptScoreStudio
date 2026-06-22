@@ -111,12 +111,6 @@ Evaluation criteria:
 4. Clarity and coherence — is it well-structured and easy to understand(should be rewarded), or is it confusing and disorganized(should be penalized)?
 5. Reward well if the response demonstrates the specific strengths of its prompting technique — for example, does the few-shot response effectively leverage the examples provided, and does the chain-of-thought response show clear step-by-step reasoning
 
-Keep in mind:
-
-Important: Evaluate all three responses simultaneously before assigning any scores. 
-Do not assess one response, score it, and then move on to the next. 
-This is a comparative evaluation, not an absolute one. 
-Ensure that no response receives an advantage or disadvantage simply because of its position in the sequence.
 
 Process:
 First, rank the three responses from strongest to weakest based on the criteria above. 
